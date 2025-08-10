@@ -36,6 +36,15 @@ function module.setWakaTimeKey(plugin: Plugin, value: string)
 	plugin:SetSetting("WakaTimeKey", value)
 end
 
+function module.getWakaTimeUrl(plugin: Plugin)
+	local value = plugin:GetSetting("WakaTimeUrl") :: string?
+	return if value == nil or value == "" then "https://api.wakatime.com/api/v1" else value
+end
+
+function module.setWakaTimeUrl(plugin: Plugin, value: string)
+	plugin:SetSetting("WakaTimeUrl", value)
+end
+
 function module.getShouldLogPlayTime(plugin: Plugin)
 	local value = plugin:GetSetting("WakaTimeShouldLogPlayTime")
 	return if value == nil then true else value
