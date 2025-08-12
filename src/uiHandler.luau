@@ -58,6 +58,9 @@ local function MainUI(props: {
 	initialApiKey: string,
 	setApiKey: (value: string) -> (),
 
+	initialApiUrl: string,
+	setApiUrl: (value: string) -> (),
+
 	initialShouldLogPlayTime: boolean,
 	setShouldLogPlayTime: (value: boolean) -> (),
 
@@ -69,6 +72,7 @@ local function MainUI(props: {
 })
 	local projectText, setProjectText = React.useState(props.initialProject)
 	local keyText, setKeyText = React.useState(props.initialApiKey)
+	local urlText, setUrlText = React.useState(props.initialApiUrl)
 
 	return e(StudioComponents.ScrollFrame, {
 		PaddingLeft = UDim.new(0, 10),
@@ -103,9 +107,27 @@ local function MainUI(props: {
 		}),
 
 		e(StudioComponents.Label, {
-			Text = `WakaTime API key{if util.isValidWakaTimeApiKey(keyText)
+			Text = "WakaTime API URL",
+			TextXAlignment = Enum.TextXAlignment.Left,
+			Size = UDim2.new(1, 0, 0, 30),
+			RichText = true,
+		}),
+		e(StudioComponents.TextInput, {
+			Text = urlText,
+			OnChanged = function(newText)
+				setUrlText(newText)
+				props.setApiUrl(newText)
+			end,
+			ClearTextOnFocus = false,
+			PlaceholderText = "https://api.wakatime.com/api/v1"
+		}),
+
+		-- VerticalSpace({ Height = 10 }),
+
+		e(StudioComponents.Label, {
+			Text = `WakaTime API key{if #keyText > 0
 				then ""
-				else " <b>(Please paste your API key that starts with waka_)</b>"}`,
+				else " <b>(Please paste your API key here)</b>"}`,
 			TextXAlignment = Enum.TextXAlignment.Left,
 			Size = UDim2.new(1, 0, 0, 30),
 			RichText = true,
@@ -117,7 +139,7 @@ local function MainUI(props: {
 				props.setApiKey(newText)
 			end,
 			ClearTextOnFocus = false,
-			PlaceholderText = "Get it at wakatime.com/api-key",
+			PlaceholderText = "Get it from wakatime.com or use your key from alternative source",
 		}),
 
 		VerticalSpace({ Height = 10 }),
@@ -173,6 +195,11 @@ function module.init(plugin: Plugin)
 		initialApiKey = storageHandler.getWakaTimeKey(plugin) or "",
 		setApiKey = function(value)
 			storageHandler.setWakaTimeKey(plugin, value)
+		end,
+
+		initialApiUrl = storageHandler.getWakaTimeUrl(plugin) or "https://api.wakatime.com/api/v1",
+		setApiUrl = function(value)
+			storageHandler.setWakaTimeUrl(plugin, value)
 		end,
 
 		initialShouldLogPlayTime = storageHandler.getShouldLogPlayTime(plugin),

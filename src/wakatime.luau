@@ -40,15 +40,17 @@ end
 
 local function sendHeartbeat(plugin: Plugin, activity: StudioActivity)
 	local apiKey = storageHandler.getWakaTimeKey(plugin)
-	if not apiKey or not util.isValidWakaTimeApiKey(apiKey) then
+	local apiUrl = storageHandler.getWakaTimeUrl(plugin)
+	if not apiKey or not apiUrl then
 		return
 	end
+	apiKey = util.encode(apiKey)
 
 	local now = DateTime.now().UnixTimestamp
 	local bodyToSend = {
 		time = now,
 		branch = `{game.PlaceId}`,
-		plugin = `Roblox Studio/{settings().Diagnostics.RobloxVersion} roblox-studio-wakatime/0.1.0`,
+		plugin = `Roblox Studio/{settings().Diagnostics.RobloxVersion} roblox-studio-wakatime/1.0.0`,
 	}
 	local projectName = storageHandler.getProjectName(plugin)
 	if projectName and #projectName > 0 then
@@ -88,7 +90,7 @@ local function sendHeartbeat(plugin: Plugin, activity: StudioActivity)
 	lastSentActivity = activity
 
 	local ok, response = pcall(HttpService.RequestAsync, HttpService, {
-		Url = "https://api.wakatime.com/api/v1/users/current/heartbeats",
+		Url = apiUrl .. "/users/current/heartbeats",
 		Method = "POST",
 		Body = HttpService:JSONEncode(bodyToSend),
 		Headers = {
@@ -97,7 +99,7 @@ local function sendHeartbeat(plugin: Plugin, activity: StudioActivity)
 		},
 	})
 	if ok then
-		-- print("Sent WakaTime heartbeat", bodyToSend)
+		-- print("Sent WakaTime heartbeat", bodyToSend, response.Body)
 	else
 		warn("Failed to call WakaTime API.", response.Body)
 	end
