@@ -125,7 +125,9 @@ local function MainUI(props: {
 		-- VerticalSpace({ Height = 10 }),
 
 		e(StudioComponents.Label, {
-			Text = "WakaTime API Key",
+			Text = `WakaTime API key{if #keyText > 0
+				then ""
+				else " <b>(Please paste your API key here)</b>"}`,
 			TextXAlignment = Enum.TextXAlignment.Left,
 			Size = UDim2.new(1, 0, 0, 30),
 			RichText = true,
